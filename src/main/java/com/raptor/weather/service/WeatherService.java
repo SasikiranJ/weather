@@ -1,16 +1,19 @@
 package com.raptor.weather.service;
 
+import com.raptor.weather.config.OpenWeatherMapApiConfiguration;
+import com.raptor.weather.context.ProcessingContext;
+import com.raptor.weather.exception.SystemErrorException;
+import com.raptor.weather.external.services.models.WeatherResponse;
+import com.raptor.weather.response.model.Weather;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
-import com.raptor.weather.config.OpenWeatherMapApiConfiguration;
-import com.raptor.weather.context.ProcessingContext;
-import com.raptor.weather.external.services.models.WeatherResponse;
-import com.raptor.weather.response.model.Weather;
 
 @Service
 public class WeatherService extends BaseService {
@@ -55,6 +58,7 @@ public class WeatherService extends BaseService {
 
 	}
 
+	@Retryable(value = RestClientException.class, maxAttempts = 5, backoff = @Backoff(delay = 1000, multiplier = 2))
 	public WeatherResponse getWeatherByCoords(String latitude, String longitude) {
 
 		try {
@@ -66,7 +70,7 @@ public class WeatherService extends BaseService {
 			return restTemplate.getForObject(url, WeatherResponse.class);
 		} catch (Exception e) {
 			LOG.debug("Exception while retrieving weather details for coordinates {}, {}", latitude, longitude);
-			throw new RuntimeException("Error fetching location details ", e);
+			throw new SystemErrorException("Error fetching weather details", e);
 		}
 	}
 

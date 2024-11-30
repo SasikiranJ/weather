@@ -1,12 +1,6 @@
 package com.raptor.weather.controller;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raptor.weather.constants.AppConstants;
@@ -14,6 +8,11 @@ import com.raptor.weather.context.ProcessingContext;
 import com.raptor.weather.response.model.WeatherDetails;
 import com.raptor.weather.service.LocationService;
 import com.raptor.weather.service.WeatherService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class WeatherDetailsController {
@@ -21,6 +20,7 @@ public class WeatherDetailsController {
 
 	private final LocationService locationService;
 	private final WeatherService weatherService;
+
 
 	public WeatherDetailsController(LocationService locationService, WeatherService weatherService) {
 		this.locationService = locationService;
@@ -52,7 +52,7 @@ public class WeatherDetailsController {
 			var resp = objectMapper.writeValueAsString(response);
 			LOG.info("Response {} ", resp);
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			LOG.error("Exception while parsing response to JSON");
 		}
 
 		return response;
