@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+    <property name="LOG_HOME" value="log/" />
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} %X{correlationId} - %replace(%msg){'\b(\d{1,3}\.\d{1,3}\.\d{1,3})\.\d{1,3}\b', 'XXX.XXX.XXX.XXX'}%n"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_HOME}/myapp.log</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/myapp.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="com.raptor.weather" level="debug">
+        <appender-ref ref="FILE" />
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+</configuration>
